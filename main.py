@@ -57,53 +57,69 @@ def Movement():
 
         #checks if the grid in front is empty, if so move forward
         if(mapW[ipy*mapX        +  ipx_add_xo]==0): px+=pdx
-        if(mapW[ipy_add_yo*mapX +  ipx       ]==0) { py+=pdy;}
+        if(mapW[ipy_add_yo*mapX +  ipx       ]==0): py+=pdy
     
     if (getKey("S")):
 
         #checks if the grid behind is empty, if so move backwards
-        if(mapW[ipy*mapX        +  ipx_sub_xo]==0) { px-=pdx;}
-        if(mapW[ipy_sub_yo*mapX +  ipx       ]==0) { py-=pdy;}
+        if(mapW[ipy*mapX        +  ipx_sub_xo]==0): px-=pdx
+        if(mapW[ipy_sub_yo*mapX +  ipx       ]==0): py-=pdy
 
     
-}
 
-def Interactions() {
+def Interactions():
     #Offset to point infront of and behind player
-    let Reach = 25;
-    let xo=0; if(pdx<0) { xo=(-Reach);} else{ xo=Reach;}
-    let yo=0; if(pdy<0) { yo=(-Reach);} else{ yo=Reach;}
-    let ipx=math.floor(px/64), ipx_add_xo=math.floor((px+xo)/64);
-    let ipy=math.floor(py/64), ipy_add_yo=math.floor((py+yo)/64);
+    Reach = 25
+    xo=0
+    if(pdx<0):
+        xo=(-Reach)
+    else: xo=Reach
+    yo=0
+    if(pdy<0):
+        yo=(-Reach)
+    else: yo=Reach
 
-    if (getKey("F")) {
-        if(mapW[ipy_add_yo*mapX+ipx_add_xo]==4) { mapW[ipy_add_yo*mapX+ipx_add_xo]=0;}
-    }
-}
+    ipx=math.floor(px/64); ipx_add_xo=math.floor((px+xo)/64)
+    ipy=math.floor(py/64); ipy_add_yo=math.floor((py+yo)/64)
 
-def dist(ax,ay,bx,by,ang) {
-    return(math.sqrt((bx-ax)*(bx-ax) + (by-ay)*(by-ay)));
-}
+    if (getKey("F")):
+        if(mapW[ipy_add_yo*mapX+ipx_add_xo]==4): mapW[ipy_add_yo*mapX+ipx_add_xo]=0
+    
 
-def drawCanvasPixel(x, y, Color) {
-    ctx.fillStyle = "rgb"+Color;
-    ctx.fillRect(x*pointWidth, y*pointHeight, pointWidth+1, pointHeight+1);
+
+def dist(ax,ay,bx,by,ang):
+    return(math.sqrt((bx-ax)*(bx-ax) + (by-ay)*(by-ay)))
+
+
+def drawCanvasPixel(x, y, Color):
+    ctx.fillStyle = "rgb"+Color     ###  ändra från ctx till typ pygame
+    ctx.fillRect(x*pointWidth, y*pointHeight, pointWidth+1, pointHeight+1)
     ctx.fillStyle = "rgb(0,0,0)"; #reverts color to black after a fill. Which tixes it in some way
-}
 
-def drawRays3D() {
-    let Color;
-    let r,mx,my,mp,dof;
-    let rx,ry,ra,xo,yo,disT;
-    ra=pa-DR*(FOV/2); if(ra<0) {ra+=2*PI;} if(ra>2*PI) {ra-=2*PI;}
-    for(r=0;r<numberOfRays;r++) {
-        let vmt=0,hmt=0; #vertical and horizontal map texture number
+
+def drawRays3D():
+    Color = ""
+    r=0;mx=0;my=0;mp=0;dof=0
+    rx=0;ry=0;ra=0;xo=0;yo=0;disT=0
+    ra=pa-DR*(FOV/2)
+    if(ra<0):
+        ra+=2*PI
+    if(ra>2*PI): ra-=2*PI
+
+    r=0
+    while r<numberOfRays:
+        r+=1
+        
+        vmt=0;hmt=0; #vertical and horizontal map texture number
 
         # ----Check horizontal line----
         dof=0
-        let disH=1000000,hx=px,hy=py;
-        let aTan=-1/math.tan(ra);
-        if(ra>PI) {ry=(((py)>>6)<<6)-0.0001; rx=(py-ry) *aTan+px; yo=-64; xo=-yo*aTan;} #looking up
+        disH=1000000;hx=px;hy=py
+        aTan=-1/math.tan(ra)
+        if(ra>PI):      #looking up
+            ry=(((py)>>6)<<6)-0.0001
+            rx=(py-ry) *aTan+px; yo=-64
+            xo=-yo*aTan 
         if(ra<PI) {ry=(((py)>>6)<<6)+64;     rx=(py-ry) *aTan+px; yo=+64; xo=-yo*aTan;} #looking down
         if(ra==0 || ra==PI) {rx=px; ry=py; dof=8;} #looking straight left or right
         while (dof<8) {
