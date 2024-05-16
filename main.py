@@ -16,7 +16,8 @@ floorOffset =  48.375 * numberOfRays/100 #48.375 for 100 rays
 pointWidth = 1280/numberOfRays
 pointHeight = 720/numberOfRays
 
-
+def getKey(a):  ###  temp
+    return
 
 def fixAng(input):
     if(input<   0): input+=2*PI
@@ -92,9 +93,11 @@ def dist(ax,ay,bx,by,ang):
 
 
 def drawCanvasPixel(x, y, Color):
+    """
     ctx.fillStyle = "rgb"+Color     ###  ändra från ctx till typ pygame
     ctx.fillRect(x*pointWidth, y*pointHeight, pointWidth+1, pointHeight+1)
     ctx.fillStyle = "rgb(0,0,0)"; #reverts color to black after a fill. Which tixes it in some way
+    """
 
 
 def drawRays3D():
@@ -196,28 +199,34 @@ def drawRays3D():
             tx=px/2 + math.cos(deg)*floorOffset*32/dy/raFix
             ty=py/2 + math.sin(deg)*floorOffset*32/dy/raFix
             mp=mapF[math.floor(ty/32)*mapX+math.floor(tx/32)]*32*32
-            c = 255/All_Textures[(math.floor(ty)&31)*32 + (math.floor(tx)&31)+mp] * 0.7; #changes colors of the current point to the right value form the texture map
-            Color = `(${c/1.3}, ${c/1.3}, ${c})`;
-            drawCanvasPixel(r, PointInColumnIndex, Color);
-        }
+            c = 255/All_Textures[(math.floor(ty)&31)*32 + (math.floor(tx)&31)+mp] * 0.7 #changes colors of the current point to the right value form the texture map
+            Color = f"({c/1.3}, {c/1.3}, {c})"
+            drawCanvasPixel(r, PointInColumnIndex, Color)
+
     
         #----Draw ceiling----
-        for(let PointInColumnIndex = 0; PointInColumnIndex < numberOfRays/2 - math.floor(lineH/100*numberOfRays/2); PointInColumnIndex++) {
-            let dy=PointInColumnIndex-(numberOfRays/2), deg=ra, raFix = math.cos(fixAng(pa-ra));
-            tx=px/2 - math.cos(deg)*floorOffset*32/dy/raFix;
-            ty=py/2 - math.sin(deg)*floorOffset*32/dy/raFix;
-            let mp=mapC[math.floor(ty/32)*mapX+math.floor(tx/32)]*32*32
-            let c = 255/All_Textures[(math.floor(ty)&31)*32 + (math.floor(tx)&31)+mp] * 0.7; #changes colors of the current point to the right value form the texture map
-            Color = `(${c/2}, ${c/1.2}, ${c/2})`;            
-            drawCanvasPixel(r, PointInColumnIndex, Color);
-        }
-        ra+=DR/(numberOfRays/FOV); if(ra<0) {ra+=2*PI;} if(ra>2*PI) {ra-=2*PI;}
-    }
-}
+        PointInColumnIndex = 0
+        while PointInColumnIndex < numberOfRays/2 - math.floor(lineH/100*numberOfRays/2):
+            PointInColumnIndex +=1
+            dy=PointInColumnIndex-(numberOfRays/2); deg=ra; raFix = math.cos(fixAng(pa-ra))
+            tx=px/2 - math.cos(deg)*floorOffset*32/dy/raFix
+            ty=py/2 - math.sin(deg)*floorOffset*32/dy/raFix
+            mp=mapC[math.floor(ty/32)*mapX+math.floor(tx/32)]*32*32
+            c = 255/All_Textures[(math.floor(ty)&31)*32 + (math.floor(tx)&31)+mp] * 0.7; #changes colors of the current point to the right value form the texture map
+            Color = f"(${c/2}, ${c/1.2}, ${c/2})";            
+            drawCanvasPixel(r, PointInColumnIndex, Color)
+        
+        ra+=DR/(numberOfRays/FOV)
+        if(ra<0):
+            ra+=2*PI
+        if(ra>2*PI):
+            ra-=2*PI
+    
 
 
-let mapX=8,mapY=8,mapS=mapX*mapY;
-let mapW = [ #map of the walls
+
+mapX=8; mapY=8; mapS=mapX*mapY
+mapW = [ #map of the walls
     2,2,2,2,2,4,2,2, 
     2,0,0,0,3,0,0,2, 
     2,0,0,0,0,1,0,4, 
@@ -226,9 +235,9 @@ let mapW = [ #map of the walls
     2,0,0,0,0,3,0,2, 
     2,0,0,0,3,0,0,2, 
     2,2,2,2,2,2,2,2,
-];
+]
 
-let mapF = [ #map of floor
+mapF = [ #map of floor
     0,0,0,0,0,0,0,0, 
     0,2,2,2,2,2,2,0, 
     0,2,2,2,2,2,2,0, 
@@ -239,7 +248,7 @@ let mapF = [ #map of floor
     0,0,0,0,0,0,0,0,
 ]
 
-let mapC = [ #map of ceiling
+mapC = [ #map of ceiling
     0,0,0,0,0,0,0,0, 
     0,0,0,0,0,0,0,0, 
     0,0,0,0,3,0,0,0, 
@@ -250,7 +259,7 @@ let mapC = [ #map of ceiling
     0,0,0,0,0,0,0,0,
 ]
 
-let All_Textures = [ #all 32x32 textures
+All_Textures = [ #all 32x32 textures
     #Checkerboard
     0,0,0,0,0,0,0,0, 1,1,1,1,1,1,1,1, 0,0,0,0,0,0,0,0, 1,1,1,1,1,1,1,1,
     0,0,0,0,0,0,0,0, 1,1,1,1,1,1,1,1, 0,0,0,0,0,0,0,0, 1,1,1,1,1,1,1,1,
@@ -401,11 +410,10 @@ let All_Textures = [ #all 32x32 textures
 ]
 
 #Updates every when the browser wants to
-def frame() {   
-    Movement();
-    drawRays3D();
-    Interactions();
-    requestAnimationFrame(frame);
-}
+def frame():
+    Movement()
+    drawRays3D()
+    Interactions()
+    #requestAnimationFrame(frame)  ###   pygame
 
-requestAnimationFrame(frame);
+#requestAnimationFrame(frame)
