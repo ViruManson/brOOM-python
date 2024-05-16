@@ -110,7 +110,7 @@ def drawRays3D():
     while r<numberOfRays:
         r+=1
         
-        vmt=0;hmt=0; #vertical and horizontal map texture number
+        vmt=0;hmt=0 #vertical and horizontal map texture number
 
         # ----Check horizontal line----
         dof=0
@@ -118,64 +118,85 @@ def drawRays3D():
         aTan=-1/math.tan(ra)
         if(ra>PI):      #looking up
             ry=(((py)>>6)<<6)-0.0001
-            rx=(py-ry) *aTan+px; yo=-64
+            rx=(py-ry) *aTan+px
+            yo=-64
             xo=-yo*aTan 
-        if(ra<PI) {ry=(((py)>>6)<<6)+64;     rx=(py-ry) *aTan+px; yo=+64; xo=-yo*aTan;} #looking down
-        if(ra==0 || ra==PI) {rx=px; ry=py; dof=8;} #looking straight left or right
-        while (dof<8) {
-            mx=(rx)>>6; my=(ry)>>6; mp=my*mapX+mx;
-            if(mp>0 && mp<mapX*mapY && mapW[mp]>0) { hmt=mapW[mp]-1; hx=rx; hy=ry; disH=dist(px,py,hx,hy,ra); dof=8;} # hit wall
-            else{rx+=xo; ry+=yo; dof+=1;} #next line
-        }
+
+        if(ra<PI):      
+            ry=(((py)>>6)<<6)+64; rx=(py-ry) *aTan+px; yo=+64; xo=-yo*aTan #looking down
+         
+        if(ra==0 | ra==PI):
+            rx=px; ry=py; dof=8 #looking straight left or right
+
+        while (dof<8):
+            mx=(rx)>>6; my=(ry)>>6; mp=my*mapX+mx
+            if(mp>0 & mp<mapX*mapY & mapW[mp]>0):
+                hmt=mapW[mp]-1; hx=rx; hy=ry; disH=dist(px,py,hx,hy,ra); dof=8; # hit wall
+            else: rx+=xo; ry+=yo; dof+=1 #next line
+        
 
         # ----Check vertical line----
         dof=0
-        let disV=1000000,vx=px,vy=py;
-        let nTan=-math.tan(ra);
-        if(ra>P2 && ra<P3) {rx=(((px)>>6)<<6)-0.0001; ry=(px-rx) *nTan+py; xo=-64; yo=-xo*nTan;} #looking left
-        if(ra<P2 || ra>P3) {rx=(((px)>>6)<<6)+64;     ry=(px-rx) *nTan+py; xo=+64; yo=-xo*nTan;} #looking right
-        if(ra==0 || ra==PI) {rx=px; ry=py; dof=8;} #looking straight up or down
-        while (dof<8) {
-            mx=(rx)>>6; my=(ry)>>6; mp=my*mapX+mx;
-            if(mp>0 && mp<mapX*mapY && mapW[mp]>0) { vmt=mapW[mp]-1; vx=rx; vy=ry; disV=dist(px,py,vx,vy,ra); dof=8;} # hit wall
-            else{rx+=xo; ry+=yo; dof+=1;} #next line
-        }
-        let Shade = 1;
-        if(disV<disH) { hmt=vmt; rx=vx; ry=vy; disT=disV; Shade=0.5}
-        if(disH<disV) {rx=hx; ry=hy; disT=disH;}
+        disV=1000000; vx=px,vy=py
+        nTan=-math.tan(ra)
+        if(ra>P2 & ra<P3): rx=(((px)>>6)<<6)-0.0001; ry=(px-rx) *nTan+py; xo=-64; yo=-xo*nTan #looking left
+        if(ra<P2 | ra>P3): rx=(((px)>>6)<<6)+64;     ry=(px-rx) *nTan+py; xo=+64; yo=-xo*nTan #looking right
+        if(ra==0 | ra==PI): rx=px; ry=py; dof=8 #looking straight up or down
+
+        while (dof<8):
+            mx=(rx)>>6; my=(ry)>>6; mp=my*mapX+mx
+            if(mp>0 & mp<mapX*mapY & mapW[mp]>0): vmt=mapW[mp]-1; vx=rx; vy=ry; disV=dist(px,py,vx,vy,ra); dof=8 # hit wall
+            else: rx+=xo; ry+=yo; dof+=1 #next line
+        
+        Shade = 1
+        if(disV<disH): hmt=vmt; rx=vx; ry=vy; disT=disV; Shade=0.5
+        if(disH<disV): rx=hx; ry=hy; disT=disH
 
         # ----Draw walls----
-        let ca=pa-ra; if(ca<0) {ca+=2*PI;} if(ca>2*PI) {ca-=2*PI;} disT=disT*math.cos(ca); #fix fisheye
-        let lineH=(mapS*100)/disT;
-        let ty_step = 32/lineH*100/numberOfRays;
-        let ty_off = 0;
+        ca=pa-ra
+        if(ca<0): ca+=2*PI
+        if(ca>2*PI): ca-=2*PI
+        disT=disT*math.cos(ca); #fix fisheye
+        lineH=(mapS*100)/disT
+        ty_step = 32/lineH*100/numberOfRays
+        ty_off = 0
 
         #if(lineH>100) {ty_off = (lineH-100)/2; lineH=100;} #line height # was not needed for some reason. only caused distortion. 100 can be increseed for less distortion
         
         #adds texture to the walls, also fixes their dirrection and shading
-        let ty = ty_off*ty_step+hmt*32;
-        let tx;
-        if(Shade==1) { tx=math.floor(rx/2)%32; if(ra<PI) { tx=31-tx;}} #x walls
-        else         { tx=math.floor(ry/2)%32; if(ra>P2 && ra<P3) { tx=31-tx;}} # y walls
+        ty = ty_off*ty_step+hmt*32
+        tx = 0
+        if(Shade==1):
+            tx=math.floor(rx/2)%32
+            if(ra<PI):
+                tx=31-tx #x walls
+        else:
+            tx=math.floor(ry/2)%32
+            if(ra>P2 & ra<P3): tx=31-tx # y walls
+            
         #loops through the points that are located where the "column line height based on distance thing" would be
-        for (let PointInColumnIndex = numberOfRays/2 - math.floor(lineH/100*numberOfRays/2); PointInColumnIndex < numberOfRays/2 + math.floor(lineH/100*numberOfRays/2); PointInColumnIndex++) {
-            let c = 255/All_Textures[math.floor(ty)*32 + math.floor(tx)] * Shade; #changes colors of the current point to the right value form the texture map
+        PointInColumnIndex = numberOfRays/2 - math.floor(lineH/100*numberOfRays/2)
+        while PointInColumnIndex < numberOfRays/2 + math.floor(lineH/100*numberOfRays/2):
+            PointInColumnIndex +=1
+            c = 255/All_Textures[math.floor(ty)*32 + math.floor(tx)] * Shade #changes colors of the current point to the right value form the texture map
             ##Color = `(${c}, ${c}, ${c})`
-            if(hmt==0){ Color = `(${c}, ${c/2}, ${c/2})`;} #checkerboard red
-            if(hmt==1){ Color = `(${c}, ${c}, ${c/2})`;} #Brick yellow
-            if(hmt==2){ Color = `(${c/2}, ${c/2}, ${c})`;} #window blue
-            if(hmt==3){ Color = `(${c/2}, ${c}, ${c/2})`;} #door green
-            drawCanvasPixel(r, PointInColumnIndex, Color);
-            ty+=ty_step; #iterates the y value of texture map
-        }
+            if(hmt==0): Color = f"({c}, {c/2}, {c/2})" #checkerboard red
+            if(hmt==1): Color = f"({c}, {c}, {c/2})" #Brick yellow
+            if(hmt==2): Color = f"({c/2}, {c/2}, {c})" #window blue
+            if(hmt==3): Color = f"({c/2}, {c}, {c/2})" #door green
+            drawCanvasPixel(r, PointInColumnIndex, Color)
+            ty+=ty_step #iterates the y value of texture map
+        
     
         # ----Draw floors----
-        for(let PointInColumnIndex = numberOfRays/2 + math.floor(lineH/100*numberOfRays/2); PointInColumnIndex < numberOfRays; PointInColumnIndex++) {
-            let dy=PointInColumnIndex-(numberOfRays/2), deg=ra, raFix = math.cos(fixAng(pa-ra));
-            tx=px/2 + math.cos(deg)*floorOffset*32/dy/raFix;
-            ty=py/2 + math.sin(deg)*floorOffset*32/dy/raFix;
-            let mp=mapF[math.floor(ty/32)*mapX+math.floor(tx/32)]*32*32
-            let c = 255/All_Textures[(math.floor(ty)&31)*32 + (math.floor(tx)&31)+mp] * 0.7; #changes colors of the current point to the right value form the texture map
+        PointInColumnIndex = numberOfRays/2 + math.floor(lineH/100*numberOfRays/2)
+        while PointInColumnIndex < numberOfRays:
+            PointInColumnIndex +=1
+            dy=PointInColumnIndex-(numberOfRays/2); deg=ra; raFix = math.cos(fixAng(pa-ra))
+            tx=px/2 + math.cos(deg)*floorOffset*32/dy/raFix
+            ty=py/2 + math.sin(deg)*floorOffset*32/dy/raFix
+            mp=mapF[math.floor(ty/32)*mapX+math.floor(tx/32)]*32*32
+            c = 255/All_Textures[(math.floor(ty)&31)*32 + (math.floor(tx)&31)+mp] * 0.7; #changes colors of the current point to the right value form the texture map
             Color = `(${c/1.3}, ${c/1.3}, ${c})`;
             drawCanvasPixel(r, PointInColumnIndex, Color);
         }
