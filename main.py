@@ -1,4 +1,5 @@
 import math
+import tkinter
 
 # import {getKey} from './Input.js';    ###  change to pygame
 
@@ -11,10 +12,19 @@ FOV = 60; #kind of but not really
 #canvas = document.getElementById("screen");        ### should be pygame or something
 #ctx = canvas.getContext("2d", { alpha: false });   ### should be pygame or something
 floorOffset =  48.375 * numberOfRays/100 #48.375 for 100 rays
+px=128; py=128; pdx=0; pdy=0; pa=0; #player position, deltaX, deltaY and angle of player
 
 #with 100 rays, resolution becomes 1280x720
 pointWidth = 1280/numberOfRays
 pointHeight = 720/numberOfRays
+
+root = tkinter.Tk()
+root.geometry('%dx%d+%d+%d' % (1536, 804, 180, 100))
+root.minsize(1536, 804)
+frame = tkinter.Canvas(root, width=1536, height=804)
+frame.pack()
+
+root.mainloop()
 
 def getKey(a):  ###  temp
     return
@@ -24,7 +34,6 @@ def fixAng(input):
     if(input>2*pi): input-=2*pi
     return input
 
-px=128; py=128; pdx=0; pdy=0; pa=0; #player position, deltaX, deltaY and angle of player
 def Movement():
     #rotates in radians if A or D is pressed
     if getKey("A"):     ###  All get key should be some keyreg from like pygame
@@ -43,11 +52,11 @@ def Movement():
     #Offset to point infront of and behind player
     xo=0
     if(pdx<0):  xo=(-20)
-    else:   xo=20
+    else:       xo=20
 
     yo=0
     if(pdy<0):  yo=(-20)
-    else:   yo=20
+    else:       yo=20
 
     #Gets the current square of the player (i think) and some offsets for collision
     #math.floor is to immitate int variables.
