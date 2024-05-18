@@ -2,9 +2,9 @@ import math
 
 # import {getKey} from './Input.js';    ###  change to pygame
 
-PI = math.PI
-P2 = PI/2
-P3 = 3*PI/2
+pi = math.pi
+P2 = pi/2
+P3 = 3*pi/2
 DR = 0.0174533 #one degree in radians
 numberOfRays = 100; #Can be changed to increase "resolution on the walls"     #but actually should be 100 so that the textures arent messed up.
 FOV = 60; #kind of but not really
@@ -20,8 +20,8 @@ def getKey(a):  ###  temp
     return
 
 def fixAng(input):
-    if(input<   0): input+=2*PI
-    if(input>2*PI): input-=2*PI
+    if(input<   0): input+=2*pi
+    if(input>2*pi): input-=2*pi
     return input
 
 px=128; py=128; pdx=0; pdy=0; pa=0; #player position, deltaX, deltaY and angle of player
@@ -30,13 +30,13 @@ def Movement():
     if getKey("A"):     ###  All get key should be some keyreg from like pygame
         pa-=0.1
         if(pa<   0):
-            pa+=2*PI
+            pa+=2*pi
         pdx=math.cos(pa)*5
         pdy=math.sin(pa)*5
     if getKey("D"):
         pa+=0.1
-        if(pa>2*PI):
-            pa-=2*PI
+        if(pa>2*pi):
+            pa-=2*pi
         pdx=math.cos(pa)*5
         pdy=math.sin(pa)*5
     
@@ -106,8 +106,8 @@ def drawRays3D():
     rx=0;ry=0;ra=0;xo=0;yo=0;disT=0
     ra=pa-DR*(FOV/2)
     if(ra<0):
-        ra+=2*PI
-    if(ra>2*PI): ra-=2*PI
+        ra+=2*pi
+    if(ra>2*pi): ra-=2*pi
 
     r=0
     while r<numberOfRays:
@@ -119,16 +119,16 @@ def drawRays3D():
         dof=0
         disH=1000000;hx=px;hy=py
         aTan=-1/math.tan(ra)
-        if(ra>PI):      #looking up
+        if(ra>pi):      #looking up
             ry=(((py)>>6)<<6)-0.0001
             rx=(py-ry) *aTan+px
             yo=-64
             xo=-yo*aTan 
 
-        if(ra<PI):      
+        if(ra<pi):      
             ry=(((py)>>6)<<6)+64; rx=(py-ry) *aTan+px; yo=+64; xo=-yo*aTan #looking down
          
-        if(ra==0 | ra==PI):
+        if(ra==0 | ra==pi):
             rx=px; ry=py; dof=8 #looking straight left or right
 
         while (dof<8):
@@ -144,7 +144,7 @@ def drawRays3D():
         nTan=-math.tan(ra)
         if(ra>P2 & ra<P3): rx=(((px)>>6)<<6)-0.0001; ry=(px-rx) *nTan+py; xo=-64; yo=-xo*nTan #looking left
         if(ra<P2 | ra>P3): rx=(((px)>>6)<<6)+64;     ry=(px-rx) *nTan+py; xo=+64; yo=-xo*nTan #looking right
-        if(ra==0 | ra==PI): rx=px; ry=py; dof=8 #looking straight up or down
+        if(ra==0 | ra==pi): rx=px; ry=py; dof=8 #looking straight up or down
 
         while (dof<8):
             mx=(rx)>>6; my=(ry)>>6; mp=my*mapX+mx
@@ -157,8 +157,8 @@ def drawRays3D():
 
         # ----Draw walls----
         ca=pa-ra
-        if(ca<0): ca+=2*PI
-        if(ca>2*PI): ca-=2*PI
+        if(ca<0): ca+=2*pi
+        if(ca>2*pi): ca-=2*pi
         disT=disT*math.cos(ca); #fix fisheye
         lineH=(mapS*100)/disT
         ty_step = 32/lineH*100/numberOfRays
@@ -171,7 +171,7 @@ def drawRays3D():
         tx = 0
         if(Shade==1):
             tx=math.floor(rx/2)%32
-            if(ra<PI):
+            if(ra<pi):
                 tx=31-tx #x walls
         else:
             tx=math.floor(ry/2)%32
@@ -218,9 +218,9 @@ def drawRays3D():
         
         ra+=DR/(numberOfRays/FOV)
         if(ra<0):
-            ra+=2*PI
-        if(ra>2*PI):
-            ra-=2*PI
+            ra+=2*pi
+        if(ra>2*pi):
+            ra-=2*pi
     
 
 
