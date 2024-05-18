@@ -1,5 +1,6 @@
 import math
 import tkinter
+import time
 
 # import {getKey} from './Input.js';    ###  change to pygame
 
@@ -24,7 +25,6 @@ root.minsize(1536, 804)
 frame = tkinter.Canvas(root, width=1536, height=804)
 frame.pack()
 
-root.mainloop()
 
 def getKey(a):  ###  temp
     return
@@ -102,6 +102,8 @@ def dist(ax,ay,bx,by,ang):
 
 
 def drawCanvasPixel(x, y, Color):
+
+    frame.create_rectangle(x*pointWidth, y*pointHeight, pointWidth+1, pointHeight+1, fill=Color)
     """
     ctx.fillStyle = "rgb"+Color     ###  ändra från ctx till typ pygame
     ctx.fillRect(x*pointWidth, y*pointHeight, pointWidth+1, pointHeight+1)
@@ -191,11 +193,11 @@ def drawRays3D():
         while PointInColumnIndex < numberOfRays/2 + math.floor(lineH/100*numberOfRays/2):
             PointInColumnIndex +=1
             c = 255/All_Textures[math.floor(ty)*32 + math.floor(tx)] * Shade #changes colors of the current point to the right value form the texture map
-            ##Color = `(${c}, ${c}, ${c})`
-            if(hmt==0): Color = f"({c}, {c/2}, {c/2})" #checkerboard red
-            if(hmt==1): Color = f"({c}, {c}, {c/2})" #Brick yellow
-            if(hmt==2): Color = f"({c/2}, {c/2}, {c})" #window blue
-            if(hmt==3): Color = f"({c/2}, {c}, {c/2})" #door green
+            ##Color = `#cccccc`8bit color in hex
+            if(hmt==0): Color = f"#{hex(c)}{hex(c/2)}{hex(c/2)}" #checkerboard red
+            if(hmt==1): Color = f"#{hex(c)}{hex(c)}{hex(c/2)}" #Brick yellow
+            if(hmt==2): Color = f"#{hex(c/2)}{hex(c/2)}{hex(c)}" #window blue
+            if(hmt==3): Color = f"#{hex(c/2)}{hex(c)}{hex(c/2)}" #door green
             drawCanvasPixel(r, PointInColumnIndex, Color)
             ty+=ty_step #iterates the y value of texture map
         
@@ -423,6 +425,10 @@ def frame():
     Movement()
     drawRays3D()
     Interactions()
+    root.after(5, frame)
     #requestAnimationFrame(frame)  ###   pygame
+
+root.after(5, frame)
+root.mainloop()
 
 #requestAnimationFrame(frame)
