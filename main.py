@@ -14,7 +14,7 @@ FOV = 60; #kind of but not really
 #ctx = canvas.getContext("2d", { alpha: false });   ### should be pygame or something
 floorOffset =  48.375 * numberOfRays/100 #48.375 for 100 rays
 px=128; py=128; pdx=0; pdy=0; pa=P2; #player position, deltaX, deltaY and angle of player
-
+ipx=0; ipy=0; ipx_add_xo=0; ipx_add_yo=0; ipx_sub_xo=0; ipx_sub_xo=0
 #with 100 rays, resolution becomes 1280x720
 pointWidth = 1920/numberOfRays
 pointHeight = 1080/numberOfRays
@@ -24,6 +24,11 @@ root.geometry('%dx%d+%d+%d' % (1920, 1080, 0, 0))
 root.minsize(1536, 804)
 frame = tkinter.Canvas(root, width=1920, height=1080)
 frame.pack()
+
+def fixPlayerCoords():
+    global px, py
+    px=px%512
+    py=py%512
 
 def toHex(int):
     value = hex(round(int))[2:]
@@ -37,7 +42,7 @@ def fixAng(input):
     return input
 
 def Movement(key):
-    global px, py, pdx, pdy, pa
+    global px, py, pdx, pdy, pa, ipx, ipy, ipx_add_xo, ipx_add_yo, ipx_sub_xo, ipx_sub_xo
     #rotates in radians if A or D is pressed
     if key.char == 'a':     ###  All get key should be some keyreg from like pygame
         pa-=0.1
@@ -81,7 +86,7 @@ def Movement(key):
     
 
 def Interactions(key):
-    global px, py, pdx, pdy, pa
+    global px, py, pdx, pdy, pa, ipx, ipy, ipx_add_xo, ipx_add_yo, ipx_sub_xo, ipx_sub_xo
     #Offset to point infront of and behind player
     Reach = 25
     xo=0
@@ -224,7 +229,6 @@ def drawRays3D():
             dy=PointInColumnIndex-(numberOfRays/2); deg=ra; raFix = math.cos(fixAng(pa-ra))
             tx=px/2 + math.cos(deg)*floorOffset*32/dy/raFix
             ty=py/2 + math.sin(deg)*floorOffset*32/dy/raFix
-            print(math.floor(ty/32)*mapX+math.floor(tx/32))
             mp=mapF[math.floor(ty/32)*mapX+math.floor(tx/32)]*32*32
             if All_Textures[(math.floor(ty)&31)*32 + (math.floor(tx)&31)+mp] == 0:
                 c = 0
@@ -445,11 +449,7 @@ All_Textures = [ #all 32x32 textures
     0,1,1,1,1,1,1,1, 1,1,1,1,1,1,1,1, 1,1,1,1,1,1,1,1, 1,1,1,1,1,1,1,0,
 ]
 
-#Updates every when the browser wants to
-
-   
-    #requestAnimationFrame(frame)  ###   pygame
-
+#root.after(1, fixPlayerCoords)
 root.after(frameInteval, drawRays3D)
 root.bind("<Key>", Movement)
 root.bind("<Key>", Interactions)
