@@ -3,20 +3,17 @@ import tkinter
 
 
 
-# import {getKey} from './Input.js';    ###  change to pygame
 frameInteval = 2000 #milliseconds
 P2 = math.pi/2
 P3 = 3*math.pi/2
 DR = 0.0174533 #one degree in radians
 numberOfRays = 100; #Can be changed to increase "resolution on the walls"     #but actually should be 100 so that the textures arent messed up.
 FOV = 60; #kind of but not really
-#canvas = document.getElementById("screen");        ### should be pygame or something
-#ctx = canvas.getContext("2d", { alpha: false });   ### should be pygame or something
 floorOffset =  48.375 * numberOfRays/100 #48.375 for 100 rays
-px=128; py=128; pdx=0; pdy=0; pa=P2; #player position, deltaX, deltaY and angle of player
+px=128; py=128; pdx=0; pdy=0; pa=0; #player position, deltaX, deltaY and angle of player
 ipx=0; ipy=0; ipx_add_xo=0; ipx_add_yo=0; ipx_sub_xo=0; ipx_sub_xo=0
 #with 100 rays, resolution becomes 1280x720
-pointWidth = 1920/numberOfRays
+pointWidth = 1920/numberOfRays 
 pointHeight = 1080/numberOfRays
 
 root = tkinter.Tk()
@@ -137,7 +134,7 @@ def drawRays3D():
 
         # ----Check horizontal line----
         dof=0
-        disH=1000000;hx=px;hy=py
+        disH=1000000; hx=px; hy=py
         aTan=-1/math.tan(ra)
         if(ra>math.pi):      #looking up
             ry=((math.floor((py)/64))*64)-0.0001
@@ -146,7 +143,10 @@ def drawRays3D():
             xo=-yo*aTan 
 
         if(ra<math.pi):      
-            ry=((math.floor((py)/64))*64)+64; rx=(py-ry) *aTan+px; yo=+64; xo=-yo*aTan #looking down
+            ry=((math.floor((py)/64))*64)+64
+            rx=(py-ry) *aTan+px
+            yo=+64
+            xo=-yo*aTan #looking down
          
         if(ra==0 or ra==math.pi):
             rx=px; ry=py; dof=8 #looking straight left or right
@@ -167,7 +167,7 @@ def drawRays3D():
         if(ra==0 or ra==math.pi): rx=px; ry=py; dof=8 #looking straight up or down
 
         while (dof<8):
-            mx=(rx)*64; my=(ry)*64; mp=my*mapX+mx
+            mx=math.floor((rx)/64); my=math.floor((ry)/64); mp=my*mapX+mx
             if(mp>0 and mp<mapX*mapY and mapW[mp]>0): vmt=mapW[mp]-1; vx=rx; vy=ry; disV=dist(px,py,vx,vy,ra); dof=8 # hit wall
             else: rx+=xo; ry+=yo; dof+=1 #next line
         
