@@ -40,7 +40,7 @@ def fixAng(input):
 def Movement(key):
     global px, py, pdx, pdy, pa
     #rotates in radians if A or D is pressed
-    if key.char == 'a':     ###  All get key should be some keyreg from like pygame
+    if key.char == 'a':
         pa-=0.1
         if(pa<   0):
             pa+=2*math.pi
