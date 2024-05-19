@@ -3,7 +3,7 @@ import tkinter
 
 
 
-frameInteval = 2000 #milliseconds
+frameInteval = 1 #milliseconds
 P2 = math.pi/2
 P3 = 3*math.pi/2
 DR = 0.0174533 #one degree in radians
@@ -12,13 +12,12 @@ FOV = 60; #kind of but not really
 floorOffset =  48.375 * numberOfRays/100 #48.375 for 100 rays
 px=128; py=128; pdx=0; pdy=0; pa=0; #player position, deltaX, deltaY and angle of player
 ipx=0; ipy=0; ipx_add_xo=0; ipx_add_yo=0; ipx_sub_xo=0; ipx_sub_xo=0
-#with 100 rays, resolution becomes 1280x720
 pointWidth = 1920/numberOfRays 
 pointHeight = 1080/numberOfRays
 
 root = tkinter.Tk()
-root.geometry('%dx%d+%d+%d' % (1920, 1080, 0, 0))
-root.minsize(1536, 804)
+root.geometry('%dx%d+%d+%d' % (1920, 1080, -8, 0))
+root.minsize(1920, 1080)
 frame = tkinter.Canvas(root, width=1920, height=1080)
 frame.pack()
 
@@ -39,7 +38,7 @@ def fixAng(input):
     return input
 
 def Movement(key):
-    global px, py, pdx, pdy, pa, ipx, ipy, ipx_add_xo, ipx_add_yo, ipx_sub_xo, ipx_sub_xo
+    global px, py, pdx, pdy, pa
     #rotates in radians if A or D is pressed
     if key.char == 'a':     ###  All get key should be some keyreg from like pygame
         pa-=0.1
@@ -83,7 +82,7 @@ def Movement(key):
     
 
 def Interactions(key):
-    global px, py, pdx, pdy, pa, ipx, ipy, ipx_add_xo, ipx_add_yo, ipx_sub_xo, ipx_sub_xo
+    global px, py, pdx, pdy, pa
     #Offset to point infront of and behind player
     Reach = 25
     xo=0
@@ -108,13 +107,7 @@ def dist(ax,ay,bx,by,ang):
 
 
 def drawCanvasPixel(x, y, Color):
-
     frame.create_rectangle(x*pointWidth, y*pointHeight, (x+1)*pointWidth+1, (y+1)*pointHeight+1, fill=Color, outline="")
-    """
-    ctx.fillStyle = "rgb"+Color     ###  ändra från ctx till typ pygame
-    ctx.fillRect(x*pointWidth, y*pointHeight, pointWidth+1, pointHeight+1)
-    ctx.fillStyle = "rgb(0,0,0)"; #reverts color to black after a fill. Which tixes it in some way
-    """
 
 
 def drawRays3D():
@@ -162,8 +155,8 @@ def drawRays3D():
         dof=0
         disV=1000000; vx=px; vy=py
         nTan=-math.tan(ra)
-        if(ra>P2 and ra<P3): rx=((math.floor((py)/64))*64)-0.0001; ry=(px-rx) *nTan+py; xo=-64; yo=-xo*nTan #looking left
-        if(ra<P2 or ra>P3): rx=((math.floor((py)/64))*64)+64;     ry=(px-rx) *nTan+py; xo=+64; yo=-xo*nTan #looking right
+        if(ra>P2 and ra<P3): rx=((math.floor((px)/64))*64)-0.0001; ry=(px-rx) *nTan+py; xo=-64; yo=-xo*nTan #looking left
+        if(ra<P2 or ra>P3): rx=((math.floor((px)/64))*64)+64;     ry=(px-rx) *nTan+py; xo=+64; yo=-xo*nTan #looking right
         if(ra==0 or ra==math.pi): rx=px; ry=py; dof=8 #looking straight up or down
 
         while (dof<8):
@@ -186,7 +179,7 @@ def drawRays3D():
 
         # ----Draw walls----
         ca=pa-ra
-        if(ca<0): ca+=2*math.pi
+        if(ca<0):         ca+=2*math.pi
         if(ca>2*math.pi): ca-=2*math.pi
         disT=disT*math.cos(ca); #fix fisheye
         lineH=(mapS*100)/disT
@@ -204,7 +197,8 @@ def drawRays3D():
                 tx=31-tx #x walls
         else:
             tx=math.floor(ry/2)%32
-            if(ra>P2 and ra<P3): tx=31-tx # y walls
+            if(ra>P2 and ra<P3):
+                tx=31-tx # y walls
             
         #loops through the points that are located where the "column line height based on distance thing" would be
         PointInColumnIndex = numberOfRays/2 - math.floor(lineH/100*numberOfRays/2)
@@ -263,6 +257,10 @@ def drawRays3D():
 
         r+=1
     root.after(frameInteval, drawRays3D)
+
+def keyboardFunctions(key):
+    Movement(key)
+    Interactions(key)
 
 
 mapX=8; mapY=8; mapS=mapX*mapY
@@ -450,9 +448,6 @@ All_Textures = [ #all 32x32 textures
 ]
 
 #root.after(1, fixPlayerCoords)
+root.bind("<Key>", keyboardFunctions)
 root.after(frameInteval, drawRays3D)
-root.bind("<Key>", Movement)
-root.bind("<Key>", Interactions)
 root.mainloop()
-
-#requestAnimationFrame(frame)
