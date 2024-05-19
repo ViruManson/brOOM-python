@@ -13,7 +13,7 @@ FOV = 60; #kind of but not really
 #canvas = document.getElementById("screen");        ### should be pygame or something
 #ctx = canvas.getContext("2d", { alpha: false });   ### should be pygame or something
 floorOffset =  48.375 * numberOfRays/100 #48.375 for 100 rays
-px=128; py=128; pdx=0; pdy=0; pa=0; #player position, deltaX, deltaY and angle of player
+px=128; py=128; pdx=0; pdy=0; pa=P2; #player position, deltaX, deltaY and angle of player
 
 #with 100 rays, resolution becomes 1280x720
 pointWidth = 1920/numberOfRays
@@ -120,7 +120,7 @@ def drawRays3D():
     frame.delete("all")
     Color = ""
     r=0;mx=0;my=0;mp=0;dof=0
-    rx=0;ry=0;ra=0;xo=0;yo=0;disT=1
+    rx=0;ry=0;ra=0;xo=0;yo=0;disT=0
     ra=pa-DR*(FOV/2)
     if(ra<0):
         ra+=2*math.pi
@@ -222,9 +222,9 @@ def drawRays3D():
         PointInColumnIndex = numberOfRays/2 + math.floor(lineH/100*numberOfRays/2)
         while PointInColumnIndex < numberOfRays:
             dy=PointInColumnIndex-(numberOfRays/2); deg=ra; raFix = math.cos(fixAng(pa-ra))
-            print(dy)
             tx=px/2 + math.cos(deg)*floorOffset*32/dy/raFix
             ty=py/2 + math.sin(deg)*floorOffset*32/dy/raFix
+            print(math.floor(ty/32)*mapX+math.floor(tx/32))
             mp=mapF[math.floor(ty/32)*mapX+math.floor(tx/32)]*32*32
             if All_Textures[(math.floor(ty)&31)*32 + (math.floor(tx)&31)+mp] == 0:
                 c = 0
@@ -233,7 +233,6 @@ def drawRays3D():
             Color = f"#{toHex(c/1.3)}{toHex(c/1.3)}{toHex(c)}"
             drawCanvasPixel(r, PointInColumnIndex, Color)
             PointInColumnIndex +=1
-            
 
     
         #----Draw ceiling----
@@ -250,6 +249,7 @@ def drawRays3D():
             Color = f"#{toHex(c/2)}{toHex(c/1.2)}{toHex(c/2)}" 
             drawCanvasPixel(r, PointInColumnIndex, Color)
             PointInColumnIndex +=1
+            
         
         ra+=DR/(numberOfRays/FOV)
         if(ra<0):
